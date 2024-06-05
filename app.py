@@ -42,18 +42,11 @@ input_data = [[house_age, balconies, bedrooms,  sqft_living]]
 predicted_price = model.predict(input_data)[0]
 
 st.header('Predicted Price')
-st.write(f'The predicted price for the house is {predicted_price:,.2f}')
+st.write(f'The predicted price for the house is ${predicted_price:,.2f}')
 
 # Display model evaluation
 st.header('Model Evaluation')
 st.write(f'Mean Squared Error: {mse:.2f}')
 
-# Plotting
-st.header('Data Visualization')
 
-fig, ax = plt.subplots()
-ax.scatter(X, y, color='blue', label='Actual Data')
-ax.plot(X_test, y_pred, color='red', linewidth=2, label='Regression Line')
-ax.legend()
-st.pyplot(fig)
 
