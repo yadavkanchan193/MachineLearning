@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+import seaborn as sns
 
 # Load dataset
 df = pd.read_csv('house_price_prediction.csv')
@@ -33,8 +34,8 @@ st.header('Enter House Details')
 # User input for house features
 bedrooms = st.number_input('Number of Bedrooms', min_value=1, max_value=10, value=3)
 balconies = st.number_input('Number of Balconies', min_value=1, max_value=10, value=2)
-house_age = st.number_input('House Age', min_value=1, max_value=10, value=2)
-sqft_living = st.number_input(' Area', min_value=1000, value=1500,max_value=3000,)
+house_age = st.number_input('House Age(Year)', min_value=1, max_value=10, value=2)
+sqft_living = st.number_input('SquareFeet Area', min_value=1000, value=1500,max_value=3000,)
 
 # Make prediction
 input_data = [[house_age, balconies, bedrooms,  sqft_living]]
@@ -50,6 +51,8 @@ st.write(f'Mean Squared Error: {mse:.2f}')
 # Plotting
 st.header('Data Visualization')
 
+sns.regplot(x=y_test,y=y_pred,ci=None,color ='red');
+
 # Scatter plot of square footage vs. price
 fig, ax = plt.subplots()
 ax.scatter(df['area'], df['price'], alpha=0.5)
@@ -57,6 +60,8 @@ ax.set_xlabel('Square Footage of Living Area')
 ax.set_ylabel('Price')
 ax.set_title('Square Footage vs. Price')
 st.pyplot(fig)
+
+
 
 # Scatter plot of number of bedrooms vs. price
 fig, ax = plt.subplots()
