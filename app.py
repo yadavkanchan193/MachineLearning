@@ -1,55 +1,59 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-import matplotlib.pyplot as plt
-import numpy as np
+from sklearn.metrics import mean_squared_error
+import seaborn as sns
 
-# Sample data
-data = {
-    'Experience': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    'Salary': [45000, 50000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 95000]
-}
-df = pd.DataFrame(data)
+# Load dataset
+df = pd.read_csv('house_price_prediction.csv')
 
-# Split the data into training and testing sets
-X = df[['Experience']]
-y = df['Salary']
+# Preprocessing
+# For simplicity, assume all features are numeric and there are no missing values
+X = df.drop('price', axis=1)
+y = df['price']
+
+# Split data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Create the model and train it
+# Train the model
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Make predictions
+# Evaluate the model
 y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
 
-# Streamlit app
-st.title('Simple Linear Regression with Streamlit')
+# Create Streamlit interface
+st.title('Housing Price Prediction')
 
-st.write("""
-## Explore the relationship between Experience and Salary
-""")
+st.header('Enter House Details')
 
-# Display the data
-st.write("### Data", df)
+# User input for house features
+bedrooms = st.number_input('Number of Bedrooms', min_value=1, max_value=10, value=3)
+balconies = st.number_input('Number of Balconies', min_value=1, max_value=10, value=2)
+house_age = st.number_input('House Age(Year)', min_value=1, max_value=10, value=2)
+sqft_living = st.number_input('SquareFeet Area', min_value=1000, value=1500,max_value=3000,)
 
-# Plotting the data
+# Make prediction
+input_data = [[house_age, balconies, bedrooms,  sqft_living]]
+predicted_price = model.predict(input_data)[0]
+
+st.header('Predicted Price')
+st.write(f'The predicted price for the house is {predicted_price:,.2f}')
+
+# Display model evaluation
+st.header('Model Evaluation')
+st.write(f'Mean Squared Error: {mse:.2f}')
+
+# Plotting
+st.header('Data Visualization')
+
 fig, ax = plt.subplots()
-ax.scatter(df['Experience'], df['Salary'], color='blue', label='Actual Data')
+ax.scatter(X, y, color='blue', label='Actual Data')
 ax.plot(X_test, y_pred, color='red', linewidth=2, label='Regression Line')
-ax.set_xlabel('Years of Experience')
-ax.set_ylabel('Salary')
 ax.legend()
 st.pyplot(fig)
 
-# Display the coefficients
-st.write("### Model Coefficients")
-st.write(f"Intercept: {model.intercept_}")
-st.write(f"Coefficient: {model.coef_[0]}")
-
-# User input for prediction
-st.write("### Predict Salary Based on Experience")
-experience = st.number_input('Years of Experience', min_value=0, max_value=50, value=5)
-predicted_salary = model.predict(np.array([[experience]]))[0]
-st.write(f"Predicted Salary: {predicted_salary:.2f}")
